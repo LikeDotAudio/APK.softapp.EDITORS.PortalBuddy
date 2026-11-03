@@ -1,0 +1,8 @@
+{
+  "name": "Portal & Off-Page Connector Buddy",
+  "icon": "🌀",
+  "group": "Design",
+  "subGroup": "Schematic & CAD",
+  "description": "Portal & Off-Page Connector Buddy: configure inter-drawing signal portal links, cross-sheet references, magnetic port snapping, and paired breakaway destinations.",
+  "app": "APK:Softapps/EDITORS/EDITORS.PortalBuddy/index.html"
+}
