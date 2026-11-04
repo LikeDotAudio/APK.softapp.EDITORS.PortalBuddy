@@ -188,31 +188,31 @@ export class PortalApp {
           </linearGradient>
         </defs>
 
-        <rect x="0" y="0" width="${width}" height="${height}" fill="#080C16" rx="8"/>
+        <rect x="0" y="0" width="${width}" height="${height}" fill="#121212" rx="8"/>
 
         <!-- Source Sheet Box -->
-        <rect x="25" y="25" width="220" height="130" rx="6" fill="#121A2F" stroke="#1E2A45" stroke-width="1.5"/>
-        <text x="35" y="48" fill="#8B9BB4" font-size="11" font-family="sans-serif">Current Sheet: <tspan fill="#F0F4F8" font-weight="bold">${this.model.sourceSheet}</tspan> [Zone ${this.model.sourceZone}]</text>
+        <rect x="25" y="25" width="220" height="130" rx="6" fill="#18181b" stroke="#2c2c2c" stroke-width="1.5"/>
+        <text x="35" y="48" fill="#888888" font-size="11" font-family="sans-serif">Current Sheet: <tspan fill="#f4f4f5" font-weight="bold">${this.model.sourceSheet}</tspan> [Zone ${this.model.sourceZone}]</text>
 
         <!-- Source Portal Arrow -->
-        <polygon points="120,65 210,65 235,95 210,125 120,125 145,95" fill="#080C16" stroke="#4A9EFF" stroke-width="2"/>
+        <polygon points="120,65 210,65 235,95 210,125 120,125 145,95" fill="#121212" stroke="#4A9EFF" stroke-width="2"/>
         <text x="175" y="92" fill="#F4902C" font-size="11" font-weight="bold" font-family="JetBrains Mono, monospace" text-anchor="middle">${this.model.portalTag}</text>
-        <text x="175" y="108" fill="#8B9BB4" font-size="9" font-family="sans-serif" text-anchor="middle">${this.model.direction}</text>
+        <text x="175" y="108" fill="#888888" font-size="9" font-family="sans-serif" text-anchor="middle">${this.model.direction}</text>
 
         <!-- Linking Tunnel / Waveguide Beam -->
         <line x1="240" y1="95" x2="395" y2="95" stroke="url(#beamGrad)" stroke-width="3" stroke-dasharray="6 4"/>
-        <circle cx="320" cy="95" r="16" fill="#0E1424" stroke="${statusColor}" stroke-width="2"/>
+        <circle cx="320" cy="95" r="16" fill="#0f0f11" stroke="${statusColor}" stroke-width="2"/>
         <text x="320" y="99" fill="${statusColor}" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">⚡</text>
-        <text x="320" y="125" fill="#8B9BB4" font-size="10" font-family="sans-serif" text-anchor="middle">${this.model.channels.length} Ch Bus</text>
+        <text x="320" y="125" fill="#888888" font-size="10" font-family="sans-serif" text-anchor="middle">${this.model.channels.length} Ch Bus</text>
 
         <!-- Destination Target Sheet Box -->
-        <rect x="395" y="25" width="220" height="130" rx="6" fill="#121A2F" stroke="#1E2A45" stroke-width="1.5"/>
-        <text x="405" y="48" fill="#8B9BB4" font-size="11" font-family="sans-serif">Target Sheet: <tspan fill="#F0F4F8" font-weight="bold">${this.model.targetSheet || '---'}</tspan> [Zone ${this.model.targetZone || '---'}]</text>
+        <rect x="395" y="25" width="220" height="130" rx="6" fill="#18181b" stroke="#2c2c2c" stroke-width="1.5"/>
+        <text x="405" y="48" fill="#888888" font-size="11" font-family="sans-serif">Target Sheet: <tspan fill="#f4f4f5" font-weight="bold">${this.model.targetSheet || '---'}</tspan> [Zone ${this.model.targetZone || '---'}]</text>
 
         <!-- Target Portal Arrow -->
-        <polygon points="410,65 500,65 525,95 500,125 410,125 435,95" fill="#080C16" stroke="${statusColor}" stroke-width="2"/>
+        <polygon points="410,65 500,65 525,95 500,125 410,125 435,95" fill="#121212" stroke="${statusColor}" stroke-width="2"/>
         <text x="465" y="92" fill="${statusColor}" font-size="11" font-weight="bold" font-family="JetBrains Mono, monospace" text-anchor="middle">${this.model.targetTag || 'UNLINKED'}</text>
-        <text x="465" y="108" fill="#8B9BB4" font-size="9" font-family="sans-serif" text-anchor="middle">${this.model.status}</text>
+        <text x="465" y="108" fill="#888888" font-size="9" font-family="sans-serif" text-anchor="middle">${this.model.status}</text>
       </svg>
     `;
 
