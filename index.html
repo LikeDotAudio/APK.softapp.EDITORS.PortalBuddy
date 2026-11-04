@@ -3,39 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal & Off-Page Connector Buddy — APK.audio</title>
+  <title>Portal & Off-Page Connector Buddy</title>
+  <link rel="stylesheet" href="css/theme.css">
   <style>
-    body { font-family: -apple-system, sans-serif; background: #0f1218; color: #e2e8f0; margin: 0; padding: 20px; }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #283348; padding-bottom: 12px; margin-bottom: 20px; }
-    .card { background: #171d27; border: 1px solid #283348; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-    button { background: #0284c7; color: #fff; border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    .split-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 16px;
+      height: calc(100vh - 120px);
+      padding: 16px;
+      overflow: hidden;
+    }
+    .panel {
+      background: var(--surface-primary, #121A2F);
+      border: 1px solid var(--border-color, #1E2A45);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 12px 16px;
+      background: var(--surface-secondary, #0E1424);
+      border-bottom: 1px solid var(--border-color, #1E2A45);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-bright, #F0F4F8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .field-group {
+      margin-bottom: 12px;
+    }
+    .field-group label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted, #8B9BB4);
+      margin-bottom: 5px;
+    }
+    .field-group input, .field-group select {
+      width: 100%;
+      background: var(--surface-bg, #080C16);
+      border: 1px solid var(--border-color, #1E2A45);
+      border-radius: 4px;
+      color: var(--text-bright, #F0F4F8);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .status-badge.paired {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ADE80;
+      border: 1px solid #4ADE80;
+    }
+    .status-badge.dangling {
+      background: rgba(239, 68, 68, 0.15);
+      color: #EF4444;
+      border: 1px solid #EF4444;
+    }
+    .svg-viewport {
+      background: var(--surface-bg, #080C16);
+      border-radius: 6px;
+      border: 1px solid var(--border-color, #1E2A45);
+      padding: 10px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .table-container {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border-color, #1E2A45);
+      border-radius: 6px;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    table.data-table th {
+      background: var(--surface-secondary, #0E1424);
+      color: var(--text-muted, #8B9BB4);
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color, #1E2A45);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    table.data-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border-color, #1E2A45);
+      color: var(--text-bright, #F0F4F8);
+    }
+    .inline-cell {
+      background: rgba(255, 255, 255, 0.02);
+      cursor: text;
+    }
+    .inline-cell:focus {
+      outline: 1px solid var(--accent-orange, #F4902C);
+      background: rgba(244, 144, 44, 0.1);
+    }
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: #FF5A5A;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .btn-delete:hover {
+      background: rgba(255, 90, 90, 0.2);
+    }
   </style>
 </head>
-<body>
-  <header>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span style="font-size:20px;">🌀</span>
-      <h2>Portal & Off-Page Connector Buddy</h2>
+<body class="deep-horizon">
+  <div class="window-header">
+    <div class="window-title">
+      <span class="window-icon">🌀</span>
+      <span class="window-text">Portal & Off-Page Connector Buddy</span>
+      <span id="block-tag" class="block-tag">PORTAL BLOCK</span>
     </div>
-    <button id="btn-export">Export Portal Links</button>
-  </header>
-
-  <div class="card">
-    <div style="font-size:16px; font-weight:700; color:#38bdf8;">PORTAL: PORTAL-MAIN-OUT</div>
-    <div style="font-size:13px; color:#94a3b8; margin-top:6px;">Target Sheet: <b>SHEET-02 (AMP ROOM)</b> &rarr; Receiving Portal: <b>PORTAL-AMP-IN</b></div>
-    <div style="font-size:12px; color:#34d399; margin-top:6px;">● Status: Paired & Validated (Zero Collision)</div>
+    <div class="window-actions">
+      <span id="status-badge" class="status-badge paired">PAIRED</span>
+      <button id="btn-open" class="btn-action">📂 Open Block</button>
+      <button id="btn-discovered" class="btn-action">⚡ Discovered</button>
+      <button id="btn-save" class="btn-action btn-primary">💾 Save & Return</button>
+      <button id="btn-close" class="btn-action btn-close">✕</button>
+    </div>
   </div>
 
-  <script type="module">
-    import { PortalLinkModel } from './js/portalApp.js';
-    const model = new PortalLinkModel();
-    document.getElementById('btn-export').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(model, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${model.portalTag}.json`;
-      a.click();
-    });
-  </script>
+  <div class="split-layout">
+    <!-- Properties sidebar -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Portal Reference Specs</span>
+      </div>
+      <div class="panel-body">
+        <div class="field-group">
+          <label>Portal Identifier Tag</label>
+          <input type="text" id="prop-portalTag" value="PORTAL-MAIN-OUT">
+        </div>
+        <div class="field-group">
+          <label>Descriptive Label</label>
+          <input type="text" id="prop-label" value="Cross-Sheet Master Bus">
+        </div>
+        <div class="field-group">
+          <label>Portal Flow Direction</label>
+          <select id="prop-direction">
+            <option value="Source">Source (Out-Sheet / Transmit)</option>
+            <option value="Destination">Destination (In-Sheet / Receive)</option>
+            <option value="Bidirectional">Bidirectional</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Symbol Geometry Style</label>
+          <select id="prop-shape">
+            <option value="Chevron Arrow">Chevron Arrow</option>
+            <option value="Hexagon">Hexagon</option>
+            <option value="Flag">Flag</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Source Sheet & Zone</label>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+            <input type="text" id="prop-sourceSheet" value="SHEET-01">
+            <input type="text" id="prop-sourceZone" value="C-4">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Target Sheet & Zone</label>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+            <input type="text" id="prop-targetSheet" value="SHEET-02">
+            <input type="text" id="prop-targetZone" value="A-1">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Target Companion Portal Tag</label>
+          <input type="text" id="prop-targetTag" value="PORTAL-AMP-IN">
+        </div>
+        <div class="field-group">
+          <label>Signal Payload Type</label>
+          <input type="text" id="prop-signal" value="Dante Audio 64-Ch Multicast">
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Off-Page Link Status & Channel Bundle</span>
+        <button id="btn-add-ch" class="btn-action btn-small">+ Add Bundled Channel</button>
+      </div>
+      <div class="panel-body" style="display: flex; flex-direction: column;">
+        <div id="portal-svg" class="svg-viewport"></div>
+
+        <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px; color: var(--text-bright);">Bundled Signal Channels / Sub-Carriers</div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 10%;">Ch #</th>
+                <th style="width: 50%;">Channel Signal Name</th>
+                <th style="width: 30%;">Audio/Video Format</th>
+                <th style="width: 10%; text-align: center;">Act</th>
+              </tr>
+            </thead>
+            <tbody id="channels-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/portalApp.js"></script>
 </body>
 </html>
