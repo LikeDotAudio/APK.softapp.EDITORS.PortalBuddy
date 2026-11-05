@@ -37,6 +37,25 @@ export class PortalApp {
 
     this.host = connectPortalHost(S, this.model, { onLoaded: () => this.render() });
     S.inheritTheme();
+    S.describe({
+      name: 'Portal Buddy',
+      does: 'Links a signal off one schematic sheet onto another: the portal tag, its target sheet / tag / zone, and the channels it bundles.',
+      inputs: [
+        { name: 'Portal block', from: 'the CAD block this editor was opened on (host@1 load)', kind: 'cad' },
+        { name: 'Block file', from: '.json picked with Open Block', kind: 'file' },
+      ],
+      outputs: [
+        { name: 'Portal block', to: 'the CAD drawing on Save & Return, or a .json download standalone', kind: 'cad' },
+        { name: 'Live edits', to: 'the CAD after every change (blockChanged)', kind: 'cad' },
+        { name: 'Paired / Dangling', to: 'the status badge: Paired once a target sheet and target tag are set', kind: 'screen' },
+      ],
+      controls: [
+        { name: 'Portal fields', how: 'tag, label, direction, shape, source sheet / zone, target sheet / zone / tag, signal' },
+        { name: '+ Add Bundled Channel', how: 'adds a channel; edit its name and format in the table, × deletes it' },
+        { name: 'Save & Return / ✕', how: 'save into the CAD (or download) / close the editor' },
+      ],
+      problems: ['bad_json', 'bad_input', 'file_unreadable', 'not_in_cad'],
+    });
     this.initControls();
     this.render();
   }
@@ -62,9 +81,13 @@ export class PortalApp {
             this.render();
             this.changed();
           } catch (err) {
-            alert('Invalid block file: ' + err.message);
+            this.S.showProblem(err.name === 'SyntaxError' ? 'bad_json' : 'bad_input', {
+              subject: file.name, detail: err.message,
+              fix: ['Open a Portal Buddy block (.json saved by this editor, blockType portal_link).'],
+            });
           }
         };
+        reader.onerror = () => this.S.showProblem('file_unreadable', { subject: file.name, detail: reader.error && reader.error.message });
         reader.readAsText(file);
       };
       input.click();
