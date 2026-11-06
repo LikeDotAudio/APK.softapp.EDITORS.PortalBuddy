@@ -2,7 +2,7 @@
 // MIT Licence. Free, for everyone, for ever. Full text in LICENSE at the root.
 
 import { PortalLinkModel } from './portalModel.js';
-import { connectPortalHost, saveMeta } from './portalHost.js';
+import { connectPortalHost, saveMeta, savePortal, openPortal } from './portalHost.js';
 
 export { PortalLinkModel };
 
@@ -42,19 +42,20 @@ export class PortalApp {
       does: 'Links a signal off one schematic sheet onto another: the portal tag, its target sheet / tag / zone, and the channels it bundles.',
       inputs: [
         { name: 'Portal block', from: 'the CAD block this editor was opened on (host@1 load)', kind: 'cad' },
-        { name: 'Block file', from: '.json picked with Open Block', kind: 'file' },
+        { name: 'Model file', from: 'Open Model: a portal .ifc (this editor\'s twin) or block .json', kind: 'file' },
       ],
       outputs: [
-        { name: 'Portal block', to: 'the CAD drawing on Save & Return, or a .json download standalone', kind: 'cad' },
+        { name: 'Portal block', to: 'the CAD drawing on Save & Return; standalone Save Model writes portal_<tag>.json AND portal_<tag>.ifc (IFC4X3_ADD2: each end an IfcAnnotation SYMBOL on its sheet, channels joined by IfcRelConnectsPorts)', kind: 'file' },
         { name: 'Live edits', to: 'the CAD after every change (blockChanged)', kind: 'cad' },
         { name: 'Paired / Dangling', to: 'the status badge: Paired once a target sheet and target tag are set', kind: 'screen' },
       ],
       controls: [
         { name: 'Portal fields', how: 'tag, label, direction, shape, source sheet / zone, target sheet / zone / tag, signal' },
         { name: '+ Add Bundled Channel', how: 'adds a channel; edit its name and format in the table, × deletes it' },
-        { name: 'Save & Return / ✕', how: 'save into the CAD (or download) / close the editor' },
+        { name: 'Open Model', how: 'pick a portal .ifc or block .json' },
+        { name: 'Save & Return / ✕', how: 'save into the CAD (standalone: Save Model, the .json and its .ifc twin) / close the editor' },
       ],
-      problems: ['bad_json', 'bad_input', 'file_unreadable', 'not_in_cad'],
+      problems: ['bad_json', 'bad_input', 'file_unreadable', 'not_in_cad', 'save_failed'],
     });
     this.initControls();
     this.render();
@@ -62,36 +63,31 @@ export class PortalApp {
 
   changed() { this.host.changed(this.model.toBlock(), saveMeta(this.model)); }
 
-  initControls() {
-    document.getElementById('btn-save')?.addEventListener('click', () => {
-      this.host.save(this.model.toBlock(), saveMeta(this.model));
-    });
+  /** Save & Return in the CAD; standalone Save Model: the block .json and its .ifc twin, both or neither. */
+  async save() {
+    const r = await savePortal(this.S, this.host, this.model);
+    if (!r.ok && !r.cancelled) this.S.showProblem(r.problem || 'save_failed', { onRetry: () => this.save() });
+    return r;
+  }
 
-    document.getElementById('btn-open')?.addEventListener('click', () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json';
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          try {
-            this.model.fromBlock(JSON.parse(evt.target.result));
-            this.render();
-            this.changed();
-          } catch (err) {
-            this.S.showProblem(err.name === 'SyntaxError' ? 'bad_json' : 'bad_input', {
-              subject: file.name, detail: err.message,
-              fix: ['Open a Portal Buddy block (.json saved by this editor, blockType portal_link).'],
-            });
-          }
-        };
-        reader.onerror = () => this.S.showProblem('file_unreadable', { subject: file.name, detail: reader.error && reader.error.message });
-        reader.readAsText(file);
-      };
-      input.click();
-    });
+  /** Open Model: a portal .ifc or block .json. */
+  async open() {
+    const r = await openPortal(this.S, this.model);
+    if (!r.ok) {
+      if (!r.cancelled) this.S.showProblem(r.problem, {
+        fix: ['Open a portal .ifc or block .json saved by Portal Buddy (Save outside the CAD writes both).'],
+        onRetry: () => this.open(),
+      });
+      return r;
+    }
+    this.render();
+    this.changed();
+    return r;
+  }
+
+  initControls() {
+    document.getElementById('btn-save')?.addEventListener('click', () => this.save());
+    document.getElementById('btn-open')?.addEventListener('click', () => this.open());
 
     document.getElementById('btn-close')?.addEventListener('click', () => this.host.close());
 
